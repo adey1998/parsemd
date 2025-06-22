@@ -158,7 +158,6 @@ Visit: `http://localhost:3000/admin/queues`
 ## 👨‍⚕️ Built For
 
 * Healthtech engineers building referral workflows
-* Backend engineers interviewing for system design roles
 * Startup builders prototyping medical automation tools
 
 
