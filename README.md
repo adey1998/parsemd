@@ -175,6 +175,12 @@ Visit: `http://localhost:3000/admin/queues`
 }
 ```
 
+## 📷 Screenshots
+
+Full walkthrough, screenshots, and feature breakdown available at:
+
+🔗 [ParseMD Project Page](https://arvildey.com/projects/parsemd)
+
 ## 📜 License
 
 This project is licensed under the [MIT License](LICENSE).
