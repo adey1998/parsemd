@@ -1,91 +1,75 @@
-# 🏥 ParseMD
+# ParseMD – Async Medical Referral Processing API
 
-A production-grade backend microservice for **asynchronously processing medical referral PDFs**. Designed to simulate real-world healthcare data workflows — where referrals arrive as scanned or digital documents, and systems must intelligently extract structured information in the background.
+A production-ready backend microservice for **asynchronously processing medical referral PDFs**. Designed to simulate real-world healthcare workflows — where scanned or digital referrals must be parsed into structured clinical metadata in the background.
 
-Built with **Node.js**, **MongoDB**, **Redis**, and **BullMQ**, this system is built for extensibility, resilience, and scale.
+Built with **Node.js**, **MongoDB**, **Redis**, and **BullMQ**, this architecture is modular, resilient, and scalable.
 
----
 
-## ⚙️ System Overview
 
-* **Upload PDF** via REST API
-* **Job is queued** in Redis for async processing
-* **Background worker** parses the PDF and extracts clinical metadata
-* **MongoDB** stores job status (`queued`, `processing`, `complete`, `failed`) and results
-* **BullMQ Dashboard** shows job lifecycle + retry status
-* **Rate limiting middleware** protects from abuse
-* **Client polls** the job status or retrieves structured result when complete
+## 🚀 Features
 
----
+- **PDF Upload API** – Upload medical referral documents via REST  
+- **Redis + BullMQ Queue** – Fast, reliable job queue with built-in retry & backoff  
+- **Background Worker** – Independent worker parses PDFs asynchronously  
+- **Clinical Data Extraction** – Extracts patient name, DOB, symptoms, and referral reason using regex  
+- **MongoDB Storage** – Durable job tracking with automatic TTL cleanup after 7 days  
+- **Bull Board Dashboard** – Real-time job lifecycle monitoring (progress, retries, failures)  
+- **Rate Limiting Middleware** – Upload protection via Express middleware  
+- **Progress Tracking** – Live `.updateProgress()` updates throughout parsing  
+- **Modular Architecture** – Decoupled components (API, worker, queue, models)  
+- **Extensible** – Ready for NLP, ICD-10 mapping, LLM pipelines, or search integration
 
-## 💡 System Design Highlights
 
-### ✅ **Decoupled Processing (Queue-Based Architecture)**
 
-* Upload endpoint is instantly responsive
-* Parsing is offloaded to background worker
-* Worker can be scaled horizontally without impacting API
+## 🧠 Architecture Overview
 
-### ♻️ **Durable Job State**
+- **Asynchronous Processing** – Uploads return instantly while workers handle PDF parsing in the background  
+- **Decoupled Job Flow** – Stateless API queues jobs, while workers handle stateful processing  
+- **Durable Job State** – MongoDB tracks status, result, and errors  
+- **Auto-Cleanup** – TTL index removes completed jobs after 7 days  
+- **Pluggable Extraction Logic** – Easily upgrade regex with clinical NLP or LLM tools  
+- **Fault Tolerance** – Built-in retry logic, fail tracking, and safe re-processing  
+- **Observability** – Visual queue dashboard via Bull Board
 
-* Job status and results persisted in MongoDB
-* Automatic retry logic via `BullMQ` (with exponential backoff)
-* Manual dashboard for monitoring and debugging (Bull Board)
 
-### 📦 **Modular Architecture**
-
-* Extraction logic is pluggable (currently regex-based)
-* Easily extend with:
-
-  * ICD-10 mapping
-  * Clinical NLP tools (e.g. spaCy, MedSpaCy, scispaCy)
-  * OpenAI or Claude for unstructured note parsing
-
-### 🧼 **Auto-Cleanup**
-
-* Jobs TTL: expired jobs are auto-purged from MongoDB after 7 days
-
-### 🔐 **Security & Abuse Protection**
-
-* Basic **rate limiter** on upload endpoint to prevent abuse
-
----
 
 ## 🧱 Tech Stack
 
-| Layer       | Technology                 |
-| ----------- | -------------------------- |
-| API Layer   | **Node.js**, **Express**   |
-| Job Queue   | **Redis**, **BullMQ**      |
-| Data Store  | **MongoDB**, **Mongoose**  |
-| PDF Parsing | **pdf-parse**              |
-| Dashboard   | **Bull Board** (BullMQ UI) |
+| Layer       | Technology            |
+| ----------- | --------------------- |
+| API Layer   | Node.js, Express      |
+| Job Queue   | Redis, BullMQ         |
+| Data Store  | MongoDB, Mongoose     |
+| PDF Parsing | pdf-parse             |
+| Dashboard   | Bull Board            |
 
----
 
-## 🧠 Architectural Pattern: **Queue-Based Microservice**
 
-We follow the **Asynchronous Processing with Worker Pattern**:
+## 🧩 Architectural Pattern
 
-* **Stateless API server** handles user interaction and enqueues jobs
-* **Stateful background workers** consume jobs from Redis
-* Ensures **non-blocking** user experience, supports **horizontal scaling**, and allows for **fault isolation**
+**Asynchronous Worker Queue Pattern**
 
-This decoupling makes it easy to add more processing logic (e.g. LLM pipelines) without modifying the core API layer.
+- **Stateless API Server** – Handles upload and queues work to Redis  
+- **Stateful Background Worker** – Processes jobs from the queue, manages state and retries  
+- Enables:
+  - Non-blocking API responses
+  - Fault isolation and retry
+  - Easy horizontal scaling
 
----
 
-## 📤 API Endpoints
+
+## 🔌 API Endpoints
 
 ### `POST /api/upload`
 
-Upload a PDF. Response:
+Upload a PDF. Returns job ID and initial status.
 
 ```json
 {
   "jobId": "abc123",
   "status": "queued"
 }
+
 ```
 
 ### `GET /api/status/:jobId`
@@ -130,9 +114,9 @@ If job failed:
 }
 ```
 
----
 
-## 🚀 Getting Started
+
+## ⚙️ Getting Started
 
 ```bash
 git clone https://github.com/yourusername/async-referral-processor.git
@@ -160,7 +144,7 @@ npm run worker
 
 Visit: `http://localhost:3000/admin/queues`
 
----
+
 
 ## 🧪 Testing
 
@@ -169,27 +153,17 @@ Visit: `http://localhost:3000/admin/queues`
 * Fetch result via `/api/result/:jobId`
 * Check Bull Board to view job lifecycle and retries
 
----
 
-## 🔮 Roadmap Ideas
 
-* [ ] FHIR-compliant output
-* [ ] ICD-10 diagnosis/procedure tagging
-* [ ] LLM-based fallback parser (OpenAI, Claude)
-* [ ] File upload auth & storage (e.g. S3 or GCS)
-* [ ] Clinic-specific dashboards
-
----
-
-## 🤝 Built For
+## 👨‍⚕️ Built For
 
 * Healthtech engineers building referral workflows
 * Backend engineers interviewing for system design roles
 * Startup builders prototyping medical automation tools
 
----
 
-## 🧠 Sample Output
+
+## 📦 Sample Output
 
 ```json
 {
@@ -201,70 +175,6 @@ Visit: `http://localhost:3000/admin/queues`
 }
 ```
 
+## 📜 License
 
-## Design Flow
-
-            ┌───────────────────────────────────────────────┐
-            │                  CLIENT (Postman, UI)         │
-            │                                               │
-            │   1. POST /api/upload (PDF file)              │
-            └───────────────────────────────────────────────┘
-                               │
-                               ▼
-            ┌───────────────────────────────────────────────┐
-            │             EXPRESS API SERVER                │
-            │         (src/server.js, src/api/upload.js)    │
-            │                                               │
-            │ - Saves uploaded file to /uploads             │
-            │ - Creates Mongo job { status: "queued" }      │
-            │ - Pushes job to in-memory queue               │
-            └───────────────────────────────────────────────┘
-                               │
-                               ▼
-         ┌───────────────────────────────────────────────┐
-         │              In-Memory Job Queue              │
-         │           (src/services/queue.js)             │
-         └───────────────────────────────────────────────┘
-                               │
-         ┌────────────────────▼────────────────────┐
-         │                                         │
-         │         BACKGROUND WORKER               │
-         │     (src/worker/index.js + processor.js)│
-         │                                         │
-         │ Polls queue every 2 seconds:            │
-         │   - Reads PDF from /uploads             │
-         │   - Extracts text with pdf-parse        │
-         │   - Parses fields via regex             │
-         │   - Updates Mongo:                      │
-         │       status = "complete"               │
-         │       result = { name, dob, ... }       │
-         └─────────────────────────────────────────┘
-                               │
-                               ▼
-             ┌──────────────────────────────────┐
-             │         MONGODB (parsemd DB)     │
-             │     (src/models/Job.js schema)   │
-             └──────────────────────────────────┘
-                               ▲
-                               │
-            ┌───────────────────────────────────────────────┐
-            │                  CLIENT                       │
-            │                                               │
-            │ 2. GET /api/status/:jobId                     │
-            │     → Reads job status + result from MongoDB  │
-            └───────────────────────────────────────────────┘
----
-
-## 🚀 Getting Started
-
-```bash
-git clone https://github.com/yourusername/async-referral-processor.git
-cd async-referral-processor
-npm install
-
-# Start API server
-npm run dev
-
-# Start worker processor
-npm run worker
-
+This project is licensed under the [MIT License](LICENSE).
