@@ -1,6 +1,6 @@
 # ParseMD – Async Medical Referral Processing API
 
-A production-ready backend microservice for **asynchronously processing medical referral PDFs**. Designed to simulate real-world healthcare workflows — where scanned or digital referrals must be parsed into structured clinical metadata in the background.
+A production-ready backend microservice for asynchronously processing unstructured medical referral PDFs. Built to simulate real-world healthcare workflows — where scanned faxes or uploaded documents must be intelligently parsed into structured clinical metadata (e.g., patient info, symptoms, ICD-10) in the background.
 
 Built with **Node.js**, **MongoDB**, **Redis**, and **BullMQ**, this architecture is modular, resilient, and scalable.
 
