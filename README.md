@@ -162,7 +162,7 @@ Visit: `http://localhost:3000/admin/queues`
 
 
 
-## 📦 Sample Output
+## 📦 Example Use Case
 
 ```json
 {
